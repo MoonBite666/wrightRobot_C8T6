@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -43,7 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint16_t PWMT;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -85,14 +86,39 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-
+  PWMT = (uint16_t) (TIM1->ARR+1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  TIM1->CCR1 = PWMT/2;
+  TIM1->CCR2 = PWMT/2;
+  int dir = 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    switch (dir)
+    {
+    case 1:
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_SET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_RESET);
+      break;
+    case 2:
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_SET);
+      break;
+    case 3:
+      dir = 0;
+    default:
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_RESET);
+      break;
+    }
+    HAL_Delay(2000);
+    dir++;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
