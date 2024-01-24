@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -43,13 +44,15 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint16_t PWMT;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void motor_forward(void);
+void motor_backward(void);
+void motor_stop(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -85,14 +88,37 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-
+  PWMT = (uint16_t) (TIM1->ARR+1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  TIM1->CCR1 = PWMT * 0.25;
+  TIM1->CCR2 = PWMT * 0.75;
+  int dir = 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    switch (dir)
+    {
+    case 1:
+      motor_forward();
+      break;
+    case 2:
+      motor_backward();
+      break;
+    case 3:
+      dir = 0;
+      break;
+    default:
+      motor_stop();
+      break;
+    }
+    HAL_Delay(1000);
+    dir++;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -140,6 +166,28 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void motor_forward(void)
+{
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_SET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor2_CTL1_Pin,GPIO_PIN_SET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor2_CTL2_Pin,GPIO_PIN_RESET);
+}
+void motor_backward(void)
+{
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_SET);
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor2_CTL1_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor2_CTL2_Pin,GPIO_PIN_SET);
+}
+void motor_stop(void)
+{
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor2_CTL1_Pin,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor2_CTL2_Pin,GPIO_PIN_RESET);
+}
+
 
 /* USER CODE END 4 */
 
