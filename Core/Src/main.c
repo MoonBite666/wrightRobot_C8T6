@@ -131,7 +131,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   TIM1->CCR1 = PWMT * 0.25;
   TIM1->CCR2 = PWMT * 0.75;
-  int dir = 1;
+  //int dir = 1;
 
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */

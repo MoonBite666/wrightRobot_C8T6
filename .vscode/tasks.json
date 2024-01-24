@@ -45,6 +45,52 @@
 			"problemMatcher": [
 				"$gcc"
 			]
+		},
+		{
+			"label": "Linux Build STM",
+			"type": "process",
+			"command": "make -j12",
+			"options": {
+				"cwd": "${workspaceRoot}"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Linux CleanBuild STM",
+			"type": "process",
+			"command": "rm ./build && make -j12",
+			"options": {
+				"cwd": "${workspaceRoot}"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Linux Flash STM",
+			"type": "process",
+			"command": "openocd -f ./openocd.cfg -c 'program build/wrightRobot_C8T6.elf verify reset exit'", 
+			"options": {
+				"cwd": "${workspaceRoot}"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
 		}
+
 	]
 }

@@ -2,6 +2,22 @@
     "configurations": [
         {
             "showDevDebugOutput": "parsed",
+            "name": "Linux STM Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/wrightRobot_C8T6.elf",
+            "configFiles": [
+              "openocd.cfg"
+            ],
+            "gdbTarget": "arm-none-eabi-gdb",
+            "svdFile": "./STM32F103.svd",
+            "runToEntryPoint": "main",
+            "device": "STM32F103C8"
+        },
+        {
+            "showDevDebugOutput": "parsed",
             "cwd": "${workspaceRoot}",
             "executable": "./build/wrightRobot_C8T6.elf",
             "name": "Debug STM32",
