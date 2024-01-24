@@ -61,6 +61,7 @@ void Error_Handler(void);
 #define LED_GPIO_Port GPIOC
 #define tracker_Pin GPIO_PIN_11
 #define tracker_GPIO_Port GPIOB
+#define tracker_EXTI_IRQn EXTI15_10_IRQn
 #define motor2_CTL2_Pin GPIO_PIN_12
 #define motor2_CTL2_GPIO_Port GPIOB
 #define motor2_CTL1_Pin GPIO_PIN_13
