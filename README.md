@@ -13,7 +13,7 @@
 - 自行下载make、arm-gnu-toolchain、openocd，并将各自的bin目录设为环境变量  
 参考的环境变量如下（无需全大写）：  
 `G:\ARM-GNU-TOOLCHAIN-13.2.REL1-MINGW-W64-I686-ARM-NONE-EABI\BIN`  
-`C:\PROGRAMDATA\CHOCOLATEY\BIN`（或者自己下载的make目录下的bin文件夹）
+`C:\PROGRAMDATA\CHOCOLATEY\BIN`（或者自己下载的make目录下的bin文件夹）  
 `G:\OPENOCD-V0.12.0-I686-W64-MINGW32\BIN`
 - clone源代码到本地，在根目录下启动VSCode。VSCode提示使用makefile进行自动配置，
 点击yes即可
