@@ -59,6 +59,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
+#define motor2_CTL2_Pin GPIO_PIN_12
+#define motor2_CTL2_GPIO_Port GPIOB
+#define motor2_CTL1_Pin GPIO_PIN_13
+#define motor2_CTL1_GPIO_Port GPIOB
 #define motor1_CTL2_Pin GPIO_PIN_14
 #define motor1_CTL2_GPIO_Port GPIOB
 #define motor1_CTL1_Pin GPIO_PIN_15
