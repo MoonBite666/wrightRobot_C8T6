@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -45,14 +45,49 @@
 
 /* USER CODE BEGIN PV */
 uint16_t PWMT;
+int edge_trigger[2];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+void led_pattern1(void);
 void motor_forward(void);
 void motor_backward(void);
 void motor_stop(void);
+void motor_edgeturn(int *edge_trigger);
+
+__weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* Prevent unused argument(s) compilation warning */
+  if (htim->Instance == TIM2)
+  {
+    
+    if ((HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
+    == GPIO_PIN_RESET && 
+    HAL_GPIO_ReadPin(fronted_TRC2_GPIO_Port, fronted_TRC2_Pin)
+    == GPIO_PIN_RESET)){
+      motor_edgeturn(edge_trigger);
+    }
+    else if (HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
+    == GPIO_PIN_RESET)
+    {
+      edge_trigger[0]++;
+      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);//For debug
+    }
+    else
+    {
+      edge_trigger[1]++;
+      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);//For debug
+    }
+  }
+  UNUSED(htim);
+
+  /* NOTE : This function should not be modified, when the callback is needed,
+            the HAL_TIM_PeriodElapsedCallback could be implemented in the user file
+   */
+}
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -89,20 +124,24 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  PWMT = (uint16_t) (TIM1->ARR+1);
+  PWMT = (uint16_t)(TIM1->ARR + 1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   TIM1->CCR1 = PWMT * 0.25;
   TIM1->CCR2 = PWMT * 0.75;
   int dir = 1;
+
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    switch (dir)
+
+    /*switch (dir)
     {
     case 1:
       motor_forward();
@@ -119,6 +158,7 @@ int main(void)
     }
     HAL_Delay(1000);
     dir++;
+    */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -166,28 +206,46 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void led_pattern1(void)
+{
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+  for (int i = 0; i < 5; i++)
+  {
+    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+    HAL_Delay(500);
+  }
+  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+  HAL_Delay(2000);
+}
+
 void motor_forward(void)
 {
-      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_SET);
-      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor2_CTL1_Pin,GPIO_PIN_SET);
-      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor2_CTL2_Pin,GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_RESET);
 }
 void motor_backward(void)
 {
-      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_SET);
-      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor2_CTL1_Pin,GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor2_CTL2_Pin,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_SET);
 }
 void motor_stop(void)
 {
-      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor1_CTL1_Pin,GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor1_CTL2_Pin,GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port,motor2_CTL1_Pin,GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port,motor2_CTL2_Pin,GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_RESET);
 }
 
+void motor_edgeturn(int *edge_trigger)
+{
+  //caculations needed
+  edge_trigger[0] = 0;
+  edge_trigger[1] = 0;
+}
 
 /* USER CODE END 4 */
 
