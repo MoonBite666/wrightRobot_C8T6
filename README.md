@@ -48,8 +48,13 @@
 2. 安装python3.8。由于这是一个过时版本的python，你无法在apt中直接下载到它。你或许可以参考[这篇文章](https://www.cnblogs.com/jsxubar/p/17622352.html)
 3. 运行VSCode中F5 Debug菜单中的“Linux STM Debug”任务
 
+## 程序数据流
+
+![c8t6flow](http://pb.mflink.top/i/2024/01/25/s8cx8n.jpg)
+
 ## Todo
 
 - [] PWM电机调速
 - [] 边缘检测调头算法
-- [] 目标检测
+- [x] 目标检测
+- [] PID算法

@@ -47,7 +47,7 @@
 uint16_t PWMT;
 uint16_t speed[2];
 int edge_trigger[2] = {0, 0};
-bool target_find[2] = {true , true};
+bool target_exist[2] = {true , true};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,12 +86,12 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     if (HAL_GPIO_ReadPin(D80NK1_GPIO_Port, D80NK1_Pin) == GPIO_PIN_RESET)
     {
-      target_find[0] = true;
+      target_exist[0] = true;
       HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);//For debug
     }
     else
     {
-      target_find[0] = false;
+      target_exist[0] = false;
       HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);//For debug
     }
   }
