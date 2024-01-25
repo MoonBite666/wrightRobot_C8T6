@@ -31,7 +31,7 @@
 2. 使用包管理器安装make、openocd
 3. 在VSCode的任务（Task）中执行编译/烧录。若需要更换仿真器，请更改根目录下openocd.cfg的内容：
 
-> source [find interface/yourdebugger.cfg]
+`source [find interface/<input your debugger>.cfg]`
 
 ## 开发流程2——调试
 
@@ -45,7 +45,7 @@
 以Ubuntu 22.04系统举例：
 
 1. 下载[arm-none-eabi-dbg](https)，将其放入/usr/bin中
-2. 安装python3.8 由于这是一个过时版本的python，所以你无法在apt中直接下载到它。你或许可以参考[这篇文章](https://www.cnblogs.com/jsxubar/p/17622352.html)
+2. 安装python3.8。由于这是一个过时版本的python，你无法在apt中直接下载到它。你或许可以参考[这篇文章](https://www.cnblogs.com/jsxubar/p/17622352.html)
 3. 运行VSCode中F5 Debug菜单中的“Linux STM Debug”任务
 
 ## Todo
