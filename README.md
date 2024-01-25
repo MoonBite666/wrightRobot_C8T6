@@ -44,7 +44,7 @@
 
 以Ubuntu 22.04系统举例：
 
-1. 下载[arm-none-eabi-dbg](https)，将其放入/usr/bin中
+1. 下载[arm-none-eabi-dbg](http://drive.mflink.top/d/storage1/Aliyun/arm-none-eabi-gdb)，将其放入/usr/bin中
 2. 安装python3.8。由于这是一个过时版本的python，你无法在apt中直接下载到它。你或许可以参考[这篇文章](https://www.cnblogs.com/jsxubar/p/17622352.html)
 3. 运行VSCode中F5 Debug菜单中的“Linux STM Debug”任务
 
