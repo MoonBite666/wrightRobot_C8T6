@@ -32,6 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "motor.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -75,6 +76,10 @@ void Error_Handler(void);
 #define motor1_PWM1_GPIO_Port GPIOA
 #define motor1_PWM2_Pin GPIO_PIN_9
 #define motor1_PWM2_GPIO_Port GPIOA
+#define D80NK2_Pin GPIO_PIN_8
+#define D80NK2_GPIO_Port GPIOB
+#define D80NK1_Pin GPIO_PIN_9
+#define D80NK1_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

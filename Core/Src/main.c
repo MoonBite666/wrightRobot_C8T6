@@ -45,21 +45,20 @@
 
 /* USER CODE BEGIN PV */
 uint16_t PWMT;
-int edge_trigger[2];
+uint16_t speed[2];
+int edge_trigger[2] = {0, 0};
+bool target_find[2] = {true , true};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void led_pattern1(void);
-void motor_forward(void);
-void motor_backward(void);
-void motor_stop(void);
-void motor_edgeturn(int *edge_trigger);
+
 
 __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  /* Prevent unused argument(s) compilation warning */
+/* ------------- TIM2 Edge Tracker Sensor Tasks -------------*/
   if (htim->Instance == TIM2)
   {
     
@@ -67,25 +66,37 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     == GPIO_PIN_RESET && 
     HAL_GPIO_ReadPin(fronted_TRC2_GPIO_Port, fronted_TRC2_Pin)
     == GPIO_PIN_RESET)){
-      motor_edgeturn(edge_trigger);
+      motor_edgeturn(edge_trigger, speed);
     }
     else if (HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
     == GPIO_PIN_RESET)
     {
       edge_trigger[0]++;
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);//For debug
+      // HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);//For debug
     }
     else
     {
       edge_trigger[1]++;
+      // HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);//For debug
+    }
+  }
+
+  /* ------------- TIM3 Photoeletric Sensor Task -------------*/
+  if (htim->Instance == TIM3)
+  {
+    if (HAL_GPIO_ReadPin(D80NK1_GPIO_Port, D80NK1_Pin) == GPIO_PIN_RESET)
+    {
+      target_find[0] = true;
+      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);//For debug
+    }
+    else
+    {
+      target_find[0] = false;
       HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);//For debug
     }
   }
   UNUSED(htim);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_TIM_PeriodElapsedCallback could be implemented in the user file
-   */
 }
 
 /* USER CODE END PFP */
@@ -125,6 +136,7 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   PWMT = (uint16_t)(TIM1->ARR + 1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -134,6 +146,7 @@ int main(void)
   //int dir = 1;
 
   HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -141,24 +154,6 @@ int main(void)
   while (1)
   {
 
-    /*switch (dir)
-    {
-    case 1:
-      motor_forward();
-      break;
-    case 2:
-      motor_backward();
-      break;
-    case 3:
-      dir = 0;
-      break;
-    default:
-      motor_stop();
-      break;
-    }
-    HAL_Delay(1000);
-    dir++;
-    */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -217,36 +212,6 @@ void led_pattern1(void)
   HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
   HAL_Delay(2000);
 }
-
-void motor_forward(void)
-{
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_RESET);
-}
-void motor_backward(void)
-{
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_SET);
-}
-void motor_stop(void)
-{
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_RESET);
-}
-
-void motor_edgeturn(int *edge_trigger)
-{
-  //caculations needed
-  edge_trigger[0] = 0;
-  edge_trigger[1] = 0;
-}
-
 /* USER CODE END 4 */
 
 /**
