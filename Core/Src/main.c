@@ -45,10 +45,11 @@
 
 /* USER CODE BEGIN PV */
 struct PID pid;
-uint16_t PWMT;
-uint16_t speed[2];
-int edge_trigger[2] = {0, 0};
-bool target_exist[2] = {true , true};
+
+uint16_t edge_trigger[2] = {0, 0};
+bool target_exist[2] = {0 , 0};
+
+bool dir[4] = {0, 0, 0, 0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,7 +68,7 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     == GPIO_PIN_RESET && 
     HAL_GPIO_ReadPin(fronted_TRC2_GPIO_Port, fronted_TRC2_Pin)
     == GPIO_PIN_RESET){
-      motor_edgeturn(edge_trigger, speed);
+      motor_edgeturn(edge_trigger, pid.feedback);
     }
     else if (HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
     == GPIO_PIN_RESET)
@@ -149,11 +150,8 @@ int main(void)
   pid_init(&pid, 1, 1, 1, 1);
 
 
-  PWMT = (uint16_t)(TIM1->ARR + 1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-  TIM1->CCR2 = (uint32_t)(PWMT * 0.75);
-  int dir = 1;
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
@@ -162,22 +160,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    motor_forward();
-    HAL_Delay(2000);
-    switch (dir)
-    {
-    case 1:
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 400);
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-      break;
-    case 2:
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 200);
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-      break;
-    default:
-      break;
-    }
-    dir += dir==3 ? -2 : 1;
+    motor_forward(dir);
+    /* -------- Write pin to control direction ---------*/
+    HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, dir[0]);
+    HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, dir[1]);
+    HAL_GPIO_WritePin(motor2_CTL1_GPIO_Port, motor2_CTL1_Pin, dir[2]);
+    HAL_GPIO_WritePin(motor2_CTL2_GPIO_Port, motor2_CTL2_Pin, dir[3]);
+
+    /* -------- Delay prevention --------*/
+    HAL_Delay(3);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

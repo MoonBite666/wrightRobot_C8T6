@@ -78,12 +78,8 @@ void Error_Handler(void);
 #define motor1_CTL1_GPIO_Port GPIOB
 #define motor1_PWM1_Pin GPIO_PIN_8
 #define motor1_PWM1_GPIO_Port GPIOA
-#define motor1_PWM2_Pin GPIO_PIN_9
-#define motor1_PWM2_GPIO_Port GPIOA
 #define motor2_PWM1_Pin GPIO_PIN_10
 #define motor2_PWM1_GPIO_Port GPIOA
-#define motor2_PWM2_Pin GPIO_PIN_11
-#define motor2_PWM2_GPIO_Port GPIOA
 #define Buzzer_Pin GPIO_PIN_15
 #define Buzzer_GPIO_Port GPIOA
 #define D80NK2_Pin GPIO_PIN_8
