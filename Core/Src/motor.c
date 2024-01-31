@@ -1,25 +1,16 @@
 #include "motor.h"
 
-void motor_forward(void)
+void motor_forward(bool *dir)
 {
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_RESET);
+  dir[0] = 1; dir[1] = 0; dir[2] = 1; dir[3] = 0;
 }
-void motor_backward(void)
+void motor_backward(bool *dir)
 {
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_SET);
+  dir[0] = 0; dir[1] = 1; dir[2] = 0; dir[3] = 1;
 }
-void motor_stop(void)
+void motor_stop(bool *dir)
 {
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor2_CTL1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor2_CTL2_Pin, GPIO_PIN_RESET);
+  dir[0] = 0; dir[1] = 0; dir[2] = 0; dir[3] = 0;
 }
 
 void motor_edgeturn(int *edge_trigger, const uint16_t *speed)

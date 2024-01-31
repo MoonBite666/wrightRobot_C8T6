@@ -1,5 +1,5 @@
 #include "main.h"
-void motor_forward(void);
-void motor_backward(void);
-void motor_stop(void);
-void motor_edgeturn(int *edge_trigger, uint16_t *speed);
+void motor_forward(bool *dir);
+void motor_backward(bool *dir);
+void motor_stop(bool *dir);
+void motor_edgeturn(int *edge_trigger, const uint16_t *speed);
