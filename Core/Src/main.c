@@ -152,9 +152,8 @@ int main(void)
   PWMT = (uint16_t)(TIM1->ARR + 1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-  TIM1->CCR1 = (uint32_t)(PWMT * 0.25);
   TIM1->CCR2 = (uint32_t)(PWMT * 0.75);
-
+  int dir = 1;
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
@@ -163,7 +162,22 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+    motor_forward();
+    HAL_Delay(2000);
+    switch (dir)
+    {
+    case 1:
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 400);
+      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+      break;
+    case 2:
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 200);
+      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+      break;
+    default:
+      break;
+    }
+    dir += dir==3 ? -2 : 1;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
