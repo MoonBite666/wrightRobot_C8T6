@@ -44,6 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+struct PID pid;
 uint16_t PWMT;
 uint16_t speed[2];
 int edge_trigger[2] = {0, 0};
@@ -62,10 +63,10 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM2)
   {
     
-    if ((HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
+    if (HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
     == GPIO_PIN_RESET && 
     HAL_GPIO_ReadPin(fronted_TRC2_GPIO_Port, fronted_TRC2_Pin)
-    == GPIO_PIN_RESET)){
+    == GPIO_PIN_RESET){
       motor_edgeturn(edge_trigger, speed);
     }
     else if (HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
@@ -87,13 +88,18 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (HAL_GPIO_ReadPin(D80NK1_GPIO_Port, D80NK1_Pin) == GPIO_PIN_RESET)
     {
       target_exist[0] = true;
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);//For debug
+      //HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);//For debug
     }
     else
     {
       target_exist[0] = false;
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);//For debug
+      // HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);//For debug
     }
+  }
+  /* ------------- TIM4 PID Task -------------*/
+  if (htim->Instance == TIM4)
+  {
+    pid_update(&pid, pid.feedback);
   }
   UNUSED(htim);
 
@@ -137,13 +143,17 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+
+  pid_init(&pid, 1, 1, 1, 1);
+
+
   PWMT = (uint16_t)(TIM1->ARR + 1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-  TIM1->CCR1 = PWMT * 0.25;
-  TIM1->CCR2 = PWMT * 0.75;
-  //int dir = 1;
+  TIM1->CCR1 = (uint32_t)(PWMT * 0.25);
+  TIM1->CCR2 = (uint32_t)(PWMT * 0.75);
 
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
@@ -225,6 +235,7 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+    //codes for error
   }
   /* USER CODE END Error_Handler_Debug */
 }

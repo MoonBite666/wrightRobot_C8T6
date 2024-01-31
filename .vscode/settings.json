@@ -2,6 +2,12 @@
     "cortex-debug.armToolchainPath": "G:\\ARM-GNU-TOOLCHAIN-13.2.REL1-MINGW-W64-I686-ARM-NONE-EABI\\BIN",
     "cortex-debug.openocdPath": "G:\\OPENOCD-V0.12.0-I686-W64-MINGW32\\BIN\\OPENOCD.EXE",
     "files.associations": {
-        "main.h": "c"
-    }
+        "main.h": "c",
+        "stm32f1xx_hal.h": "c",
+        "motor.h": "c",
+        "pid.h": "c",
+        "stdbool.h": "c"
+    },
+    "makefile.compileCommandsPath": ".vscode/compile_commands.json",
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}\\.vscode\\compile_commands.json"
 }
