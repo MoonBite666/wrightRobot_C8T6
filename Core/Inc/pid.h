@@ -2,19 +2,19 @@
 #ifndef PID_H
 #define PID_H
 struct PID {
-  uint16_t Kp;
-  uint16_t Ki;
-  uint16_t Kd;
-  uint16_t setpoint;
-  uint16_t feedback;
-  uint16_t error;
-  uint16_t integral;
-  uint16_t derivative;
-  uint16_t output;
+  double Kp;
+  double Ti;
+  double Td;
+  double setpoint;
+  double feedback;
+  double error;
+  double error_prev;
+  double error_next;
+  double output;
 };
 
-void pid_init(struct PID *pid, uint16_t Kp, uint16_t Ki, uint16_t Kd, uint16_t setpoint);
+void pid_init(struct PID *pid, double Kp, double Ti, double Td, double setpoint);
 
-void pid_update(struct PID *pid, uint16_t feedback);
+void pid_update(struct PID *pid);
 
 #endif

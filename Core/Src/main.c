@@ -44,7 +44,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-struct PID pid;
+struct PID pid1;
+struct PID pid2;
 
 uint16_t edge_trigger[2] = {0, 0};
 bool target_exist[2] = {0 , 0};
@@ -68,7 +69,7 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     == GPIO_PIN_RESET && 
     HAL_GPIO_ReadPin(fronted_TRC2_GPIO_Port, fronted_TRC2_Pin)
     == GPIO_PIN_RESET){
-      motor_edgeturn(edge_trigger, pid.feedback);
+      motor_edgeturn(edge_trigger, (uint16_t)pid1.feedback);
     }
     else if (HAL_GPIO_ReadPin(fronted_TRC1_GPIO_Port, fronted_TRC1_Pin) 
     == GPIO_PIN_RESET)
@@ -100,7 +101,8 @@ __weak void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* ------------- TIM4 PID Task -------------*/
   if (htim->Instance == TIM4)
   {
-    pid_update(&pid, pid.feedback);
+    pid_update(&pid1);
+    pid_update(&pid2);
   }
   UNUSED(htim);
 
@@ -147,13 +149,15 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
-  pid_init(&pid, 1, 1, 1, 1);
+  pid_init(&pid1, 0.05, 0.10, 0.01, 50);
+  pid_init(&pid2, 0.05, 0.10, 0.01, 50);
 
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -166,9 +170,11 @@ int main(void)
     HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, dir[1]);
     HAL_GPIO_WritePin(motor2_CTL1_GPIO_Port, motor2_CTL1_Pin, dir[2]);
     HAL_GPIO_WritePin(motor2_CTL2_GPIO_Port, motor2_CTL2_Pin, dir[3]);
-
+    /* -------- Set compare PWM to control speed ---------*/
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 100 - pid1.output);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 100 - pid2.output);
     /* -------- Delay prevention --------*/
-    HAL_Delay(3);
+    HAL_Delay(2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
