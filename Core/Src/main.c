@@ -166,13 +166,13 @@ int main(void)
   {
     motor_forward(dir);
     /* -------- Write pin to control direction ---------*/
-    HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, dir[0]);
+    HAL_GPIO_WritePin(motor1_CTL1_GPIO_Port, motor1_CTL1_Pin, 1);
     HAL_GPIO_WritePin(motor1_CTL2_GPIO_Port, motor1_CTL2_Pin, dir[1]);
     HAL_GPIO_WritePin(motor2_CTL1_GPIO_Port, motor2_CTL1_Pin, dir[2]);
     HAL_GPIO_WritePin(motor2_CTL2_GPIO_Port, motor2_CTL2_Pin, dir[3]);
     /* -------- Set compare PWM to control speed ---------*/
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 100 - pid1.output);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 100 - pid2.output);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 1000);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 50);
     /* -------- Delay prevention --------*/
     HAL_Delay(2);
     /* USER CODE END WHILE */
